@@ -8,6 +8,8 @@ chai.use(chaiHttp);
 let testId; // Variable para guardar un ID y usarlo en pruebas de PUT/DELETE
 
 suite('Functional Tests', function() {
+
+    this.timeout(5000);
   
   suite('POST /api/issues/{project} => Create issue object', function() {
     

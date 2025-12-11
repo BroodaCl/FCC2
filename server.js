@@ -6,6 +6,9 @@ const expect      = require('chai').expect;
 const cors        = require('cors');
 require('dotenv').config();
 
+// IMPORTAR MONGOOSE
+const mongoose = require('mongoose');
+
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
@@ -16,16 +19,13 @@ app.use('/public', express.static(process.cwd() + '/public'));
 
 app.use(cors({origin: '*'})); //For FCC testing purposes only
 
-
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//Sample front-end
-app.route('/:project/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/issue.html');
-  });
+// --- CONEXIÓN A LA BASE DE DATOS (CRUCIAL) ---
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('Base de datos conectada exitosamente'))
+  .catch((err) => console.error('Error de conexión a BD:', err));
 
 //Index page (static HTML)
 app.route('/')
@@ -46,19 +46,22 @@ app.use(function(req, res, next) {
     .send('Not Found');
 });
 
+const port = process.env.PORT || 3000;
+
 //Start our server and tests!
-const listener = app.listen(process.env.PORT || 3000, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
+app.listen(port, function () {
+  console.log("Listening on port " + port);
   if(process.env.NODE_ENV==='test') {
     console.log('Running Tests...');
     setTimeout(function () {
       try {
         runner.run();
       } catch(e) {
-        console.log('Tests are not valid:');
-        console.error(e);
+        let error = e;
+          console.log('Tests are not valid:');
+          console.log(error);
       }
-    }, 3500);
+    }, 3500); // Aumentamos un poco el tiempo de espera antes de iniciar tests
   }
 });
 
