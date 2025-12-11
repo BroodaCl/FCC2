@@ -9,7 +9,8 @@ let testId; // Variable para guardar un ID y usarlo en pruebas de PUT/DELETE
 
 suite('Functional Tests', function() {
 
-    this.timeout(5000);
+  // Aumentamos el tiempo de espera a 10 segundos para evitar Timeouts en Render
+  this.timeout(10000);
   
   suite('POST /api/issues/{project} => Create issue object', function() {
     
@@ -172,7 +173,7 @@ suite('Functional Tests', function() {
       chai.request(server)
         .put('/api/issues/testproject')
         .send({
-          _id: '5f665eb46e296f6b9b6a504d', // ID falso pero formato válido
+          _id: '5f665eb46e296f6b9b6a504d', 
           issue_text: 'Invalid ID'
         })
         .end(function(err, res){
@@ -203,7 +204,7 @@ suite('Functional Tests', function() {
       chai.request(server)
         .delete('/api/issues/testproject')
         .send({
-          _id: '5f665eb46e296f6b9b6a504d' // ID falso
+          _id: '5f665eb46e296f6b9b6a504d' 
         })
         .end(function(err, res){
           assert.equal(res.status, 200);

@@ -24,10 +24,9 @@ module.exports = function (app) {
     // --- GET: Ver problemas ---
     .get(async function (req, res){
       let project = req.params.project;
-      let filter = req.query;
       
-      // Aseguramos que solo busque en el proyecto actual
-      filter.project = project;
+      // Creamos un objeto filtro seguro combinando params y query
+      let filter = { ...req.query, project: project };
 
       try {
         const issues = await Issue.find(filter);
@@ -61,7 +60,6 @@ module.exports = function (app) {
 
       try {
         const savedIssue = await newIssue.save();
-        // Devolvemos el objeto sin el campo __v y con el formato correcto
         res.json({
           assigned_to: savedIssue.assigned_to,
           status_text: savedIssue.status_text,
@@ -83,17 +81,14 @@ module.exports = function (app) {
       let project = req.params.project;
       const { _id, ...updateFields } = req.body;
 
-      // 1. Validar si hay ID
       if (!_id) {
         return res.json({ error: 'missing _id' });
       }
 
-      // 2. Validar si hay campos para actualizar
       if (Object.keys(updateFields).length === 0) {
         return res.json({ error: 'no update field(s) sent', '_id': _id });
       }
 
-      // 3. Intentar actualizar
       try {
         updateFields.updated_on = new Date();
         const updatedIssue = await Issue.findByIdAndUpdate(_id, updateFields, { new: true });

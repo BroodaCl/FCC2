@@ -22,7 +22,8 @@ app.use(cors({origin: '*'})); //For FCC testing purposes only
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// --- CONEXIÓN A LA BASE DE DATOS (CRUCIAL) ---
+// --- CONEXIÓN A LA BASE DE DATOS ---
+// Aseguramos que la conexión esté activa antes de que el servidor acepte peticiones críticas
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Base de datos conectada exitosamente'))
   .catch((err) => console.error('Error de conexión a BD:', err));
@@ -61,7 +62,7 @@ app.listen(port, function () {
           console.log('Tests are not valid:');
           console.log(error);
       }
-    }, 3500); // Aumentamos un poco el tiempo de espera antes de iniciar tests
+    }, 3500); // Espera inicial para asegurar que la BD conectó
   }
 });
 
